@@ -1,98 +1,106 @@
-const router = require("express").Router();
-const bcrypt = require("bcryptjs");
 
-const UserModel = require("../models/User.model");
+//importando o express
+const router = require("express").Router();
+
+const bcrypt = require("bcryptjs");
+// import da funcão de geraçãço de tokens
 const generateToken = require("../config/jwt.config");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
 
+// gera o salt
 const salt_rounds = 10;
+
+
+
+//importar o modelo da coleção
+const UserModel = require("../models/User.model");
+
 
 // Crud (CREATE) - HTTP POST
 // Criar um novo usuário
 router.post("/signup", async (req, res) => {
-  // Requisições do tipo POST tem uma propriedade especial chamada body, que carrega a informação enviada pelo cliente
-  console.log(req.body);
-
   try {
-    // Recuperar a senha que está vindo do corpo da requisição
-    const { password } = req.body;
+    // Extrair os dados do corpo da requisição
 
-    // Verifica se a senha não está em branco ou se a senha não é complexa o suficiente
+    const { name, nickName, idade, email, estado, cidade, telefone, password } = req.body;
+
+    // Verificar se a senha é forte
+
     if (
       !password ||
       !password.match(
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/
+        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/gm
       )
     ) {
-      // O código 400 significa Bad Request
       return res.status(400).json({
-        msg: "Password is required and must have at least 8 characters, uppercase and lowercase letters, numbers and special characters.",
+        msg: "A senha deve conter pelo menos 8 caracteres, letras maiúscula e minúsculas, números e caracteres especiais",
       });
     }
 
-    // Gera o salt
-    const salt = await bcrypt.genSalt(salt_rounds);
+    // Criptografar a senha
 
-    // Criptografa a senha
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // Gera o salt (string aleatória) com custo 10
+    const salt = bcrypt.genSaltSync(salt_rounds);
 
-    // Salva os dados de usuário no banco de dados (MongoDB) usando o body da requisição como parâmetro
-    const result = await UserModel.create({
-      ...req.body,
-      passwordHash: hashedPassword,
-    });
+    // Criptografando a senha do usuário
+    const passwordHash = bcrypt.hashSync(password, salt);
 
-    // Responder o usuário recém-criado no banco para o cliente (solicitante). O status 201 significa Created
-    return res.status(201).json(result);
+    // Inserir no banco de dados
+
+    const result = await UserModel.create({ name, nickName, idade,  email,estado, cidade, telefone, passwordHash });
+
+    // Responder a requisição
+    res.status(201).json(result);
   } catch (err) {
-    console.error(err);
-    // O status 500 signifca Internal Server Error
-    return res.status(500).json({ msg: JSON.stringify(err) });
+    console.log(err);
+
+    // No mongoose, código de erro 11000 sempre se referem à erros de validação do modelo
+    if (err.code === 11000) {
+      return res.status(400).json(err.message ? err.message : err);
+    }
+
+    res.status(500).json(err);
   }
 });
 
 // Login
 router.post("/login", async (req, res) => {
   try {
-    // Extraindo o email e senha do corpo da requisição
+    // Extrair os dados do corpo da requisição
+
     const { email, password } = req.body;
 
-    // Pesquisar esse usuário no banco pelo email
-    const user = await UserModel.findOne({ email });
+    // Procurar o usuário no banco de dados através do email
 
-    console.log(user);
+    const foundUser = await UserModel.findOne({ email });
 
-    // Se o usuário não foi encontrado, significa que ele não é cadastrado
-    if (!user) {
-      return res
-        .status(400)
-        .json({ msg: "This email is not yet registered in our website;" });
+    // Caso encontrado, verificar se a senha está correta
+console.log(foundUser)
+    if (!foundUser) {
+      return res.status(400).json({ msg: "E-mail ou senha incorretos." });
+    }
+// compara a senha do usuario com o token
+    if (!bcrypt.compareSync(password, foundUser.passwordHash)) {
+      return res.status(400).json({ msg: "E-mail ou senha incorretos." });
     }
 
-    // Verificar se a senha do usuário pesquisado bate com a senha recebida pelo formulário
+    // Caso correta, criar uma sessão para esse usuário
 
-    if (await bcrypt.compare(password, user.passwordHash)) {
-      // Gerando o JWT com os dados do usuário que acabou de logar
-      const token = generateToken(user);
-
-      return res.status(200).json({
-        user: {
-          name: user.name,
-          email: user.email,
-          _id: user._id,
-          role: user.role,
-        },
-        token,
-      });
-    } else {
-      // 401 Significa Unauthorized
-      return res.status(401).json({ msg: "Wrong password or email" });
-    }
+    const token = generateToken(foundUser);
+res
+  .status(200)
+  .json({
+    token,
+    user: {
+      _id: foundUser._id,
+      name: foundUser.name,
+      email: foundUser.email,
+    },
+  });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ msg: JSON.stringify(err) });
-  }
+  console.log(err);
+}
 });
 
 // cRud (READ) - HTTP GET
@@ -108,7 +116,7 @@ router.get("/profile", isAuthenticated, attachCurrentUser, (req, res) => {
       // Responder o cliente com os dados do usuário. O status 200 significa OK
       return res.status(200).json(loggedInUser);
     } else {
-      return res.status(404).json({ msg: "User not found." });
+      return res.status(404).json({ msg: "Usuário não logado." });
     }
   } catch (err) {
     console.error(err);
