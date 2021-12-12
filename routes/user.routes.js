@@ -48,7 +48,8 @@ router.post("/signup", async (req, res) => {
 
     // Inserir no banco de dados
 
-    const result = await UserModel.create({ name, nickName, idade,  email,estado, cidade, telefone, passwordHash });
+    const result = await UserModel.create({ name, nickName, idade,  email,estado,
+       cidade, telefone, passwordHash });
 
     // Responder a requisição
     res.status(201).json(result);
@@ -76,7 +77,6 @@ router.post("/login", async (req, res) => {
     const foundUser = await UserModel.findOne({ email });
 
     // Caso encontrado, verificar se a senha está correta
-console.log(foundUser)
     if (!foundUser) {
       return res.status(400).json({ msg: "E-mail ou senha incorretos." });
     }
@@ -88,9 +88,7 @@ console.log(foundUser)
     // Caso correta, criar uma sessão para esse usuário
 
     const token = generateToken(foundUser);
-res
-  .status(200)
-  .json({
+    res.status(200).json({
     token,
     user: {
       _id: foundUser._id,

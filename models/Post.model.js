@@ -1,14 +1,15 @@
-const { Schema, model } = require("mongoose");
+const mongoose = require('mongoose')
 
-const PostSchema = new Schema({
-    nickName: { type: String, required: true, trim: true },
-    idade: { type: String },
-    estado: { type: String, required: true },
-    cidade: { type: String, required: true },
-    descricao: { type: String, required: true},
-    imagem: { type: String}
-});
+//Definir quais campos e quais regras desses campos os documentos do MongoDB terão (Schema)
+const PostSchema = new mongoose.Schema({
+    sobrenome: { type: String, trim: true},
+    idade: { type: String},
+    estado: { type: String, trim: true},
+    cidade: { type: String, trim: true},
+    descricao: { type: String, trim: true },
+    imageUrl: { type: String, trim: true },
+    userId: String,
 
-const UserModel = model("User", UserSchema);
+})
 
-module.exports = UserModel;
+module.exports = mongoose.model("Post", PostSchema)
