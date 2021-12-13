@@ -17,18 +17,17 @@ const salt_rounds = 10;
 
 
 //importar o modelo da coleção
-const UserModel = require("../models/User.model");
+const familiaModel = require("../models/familia.model");
 
 
 // Crud (CREATE) - HTTP POST
 // Criar uma nova familia
-router.post("/signup", isAuthenticated, async (req, res) => {
-  console.log(req.body);
+router.post("/cadastra-familia", async (req, res) => {
 
   try {
     // Extrair os dados do corpo da requisição
 
-    const { name, nickName, idade, email, estado, cidade, telefone, password } = req.body;
+    const { name, email, cep, address, phone, password } = req.body;
 
     // Verificar se a senha é forte
 
@@ -53,8 +52,8 @@ router.post("/signup", isAuthenticated, async (req, res) => {
 
     // Inserir no banco de dados
 
-    const result = await UserModel.create({ name, nickName, idade,  email,estado,
-       cidade, telefone, passwordHash });
+    const result = await familiaModel.create({ name, email, cep, address, phone, passwordHash });
+        
 
     // Responder a requisição
     res.status(201).json(result);
@@ -71,15 +70,15 @@ router.post("/signup", isAuthenticated, async (req, res) => {
 });
 
 // Login
-router.post("/login", async (req, res) => {
+router.post("/login-familia", async (req, res) => {
   try {
     // Extrair os dados do corpo da requisição
 
-    const { email, password } = req.body;
+    const {  email, password } = req.body;
 
     // Procurar o usuário no banco de dados através do email
 
-    const foundUser = await UserModel.findOne({ email });
+    const foundUser = await familiaModel.findOne({ email });
 
     // Caso encontrado, verificar se a senha está correta
     if (!foundUser) {
@@ -108,7 +107,7 @@ router.post("/login", async (req, res) => {
 
 // cRud (READ) - HTTP GET
 // Buscar dados do usuário
-router.get("/profile", isAuthenticated, attachCurrentUser, (req, res) => {
+router.get("/perfil-familia", isAuthenticated, attachCurrentUser, (req, res) => {
   console.log(req.headers);
 
   try {

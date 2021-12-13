@@ -7,7 +7,7 @@ const router = express.Router();
 const PostModel = require("../models/Post.model");
 
 //Importar o modelo de usuários
-const UserModel = require("../models/User.model");
+const UserModel = require("../models/Vitma");
 
 //Importar Autenticação JWT
 const isAuthenticated = require("../middlewares/isAuthenticated");
@@ -78,7 +78,9 @@ const result = await PostModel.findOne({_id: req.params.id});
         // Atualizar o registro
         if (!result) {
             return res.status(404).json({ msg: "Produto não encontrado." });
+
         }
+        
         const postUpdate = await PostModel.findOneAndUpdate(
             { _id: req.params.id },
             { $set: req.body },
