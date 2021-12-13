@@ -13,6 +13,9 @@ const salt_rounds = 10;
 
 
 
+
+
+
 //importar o modelo da coleção
 const UserModel = require("../models/User.model");
 
