@@ -21,8 +21,10 @@ const UserModel = require("../models/User.model");
 
 
 // Crud (CREATE) - HTTP POST
-// Criar um novo usuário
-router.post("/signup", async (req, res) => {
+// Criar uma nova familia
+router.post("/signup", isAuthenticated, async (req, res) => {
+  console.log(req.body);
+
   try {
     // Extrair os dados do corpo da requisição
 
