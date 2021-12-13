@@ -1,6 +1,9 @@
+const mongoose = require("mongoose");
+
+
 const { Schema, model } = require("mongoose");
 
-const UserSchema = new Schema({
+const FamiliaSchema = new Schema({
   name: { type: String, required: true, trim: true },
   email: {
     type: String,
@@ -9,24 +12,21 @@ const UserSchema = new Schema({
     trim: true,
     lowercase: true,
   },
-  location: {
-    cep: Number,
+    cep: { type: Number,
     required: true,
-    trim: true,
-    address: String,
+    trim: true},
+    address:{ type: String,
     required: true,
-    trim: true,
-  },
+    trim: true  },
   phone: { type: Number, trim: true, unique: true },
   passwordHash: { type: String, required: true },
   role: {
     type: String,
     enum: ["ADMIN", "USER"],
-    required: true,
     default: "USER",
   },
 });
 
-const UserModel = model("User", UserSchema);
+const FamiliaModel = model("Familia", FamiliaSchema);
 
-module.exports = UserModel;
+module.exports = FamiliaModel;
