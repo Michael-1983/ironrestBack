@@ -31,7 +31,7 @@ router.post("/cadastro-post", isAuthenticated,attachCurrentUser,  async (req, re
         });
 
         //Inserir o ID do post no  cadastro do usuário
-        await UserModel.findOneAndUpdate(
+        await PostModel.findOneAndUpdate(
             { _id: req.user._id },
             { $push: { postId: postCreated._id } }
         );
@@ -44,7 +44,7 @@ router.post("/cadastro-post", isAuthenticated,attachCurrentUser,  async (req, re
 });
 
 //Busca lista completa dos post (exibe apenas se estiver logado)
-router.get("/lista-post", isAuthenticated, async (req, res) => {
+router.get("/lista-post", async (req, res) => {
     try {
         const post = await PostModel.find();
 
@@ -56,7 +56,7 @@ router.get("/lista-post", isAuthenticated, async (req, res) => {
 });
 
 //mostrat o detalhe de um post
-router.get("/detalhe-post/:id",isAuthenticated,attachCurrentUser, async (req, res) => {
+router.get("/detalhe-post/:id" , async (req, res) => {
     try {
        const post = await PostModel.findOne({ _id: req.params.id});
       
@@ -70,27 +70,32 @@ router.get("/detalhe-post/:id",isAuthenticated,attachCurrentUser, async (req, re
     }
 });
 
-//atualiza post
-router.patch("/atualiza-post/:id", async (req, res) => {
+//atualizar o post
+router.patch("/atualizarPost/:id", async (req, res) => {
     try {
         // Extrair os dados do corpo da requisição
-
+const result = await PostModel.findOne({_id: req.params.id}); 
         // Atualizar o registro
-        const post = await PostModel.findOneAndUpdate({ _id: req.params.id},
+        if (!result) {
+            return res.status(404).json({ msg: "Produto não encontrado." });
+        }
+        const postUpdate = await PostModel.findOneAndUpdate(
+            { _id: req.params.id },
             { $set: req.body },
             { new: true, runValidators: true }
         );
 
-        if (!post) {
-            return res.status(404).json({ msg: "Post não encontrado." });
-        }
+        
 
-        res.status(200).json(post);
+        res.status(200).json(postUpdate);
     } catch (err) {
         console.log(err);
         res.status(500).json(err);
     }
 });
+
+
+
 
 
 //Deleta quarto(Deleta apenas se o quarto foi cadastrado pelo usuário logado)

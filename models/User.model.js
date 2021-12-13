@@ -12,8 +12,7 @@ const UserSchema = new Schema({
   cidade: {type: String, required: true },
   telefone: { type: Number, required: true, trim: true},
   passwordHash: { type: String, required: true }, 
-  postId: [{ type: mongoose.Types.ObjectId, ref: "Post" }],
-userId: String,
+
   role: {
     type: String,
     enum: ["ADMIN", "USER"],
