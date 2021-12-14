@@ -7,7 +7,7 @@ const router = express.Router();
 const PostModel = require("../models/Post.model");
 
 //Importar o modelo de usuários
-const UserModel = require("../models/Vitma");
+const UserModel = require("../models/VitmaModel");
 
 //Importar Autenticação JWT
 const isAuthenticated = require("../middlewares/isAuthenticated");
@@ -71,7 +71,7 @@ router.get("/detalhe-post/:id" , async (req, res) => {
 });
 
 //atualizar o post
-router.patch("/atualizarPost/:id", async (req, res) => {
+router.patch("/atualizarPost/:id",isAuthenticated, attachCurrentUser, async (req, res) => {
     try {
         // Extrair os dados do corpo da requisição
 const result = await PostModel.findOne({_id: req.params.id}); 
