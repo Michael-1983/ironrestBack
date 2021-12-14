@@ -7,6 +7,9 @@ const bcrypt = require("bcryptjs");
 const generateToken = require("../config/jwt.config");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
+const attachCurrentFamilia = require("../middlewares/attacCurrentFamilia");
+
+
 
 // gera o salt
 const salt_rounds = 10;
@@ -28,7 +31,7 @@ router.post("/cadastra-familia", async (req, res) => {
     // Extrair os dados do corpo da requisição
 
     const { name, email, cep, address, phone, password } = req.body;
-
+console.log(req.body);
     // Verificar se a senha é forte
 
     if (
@@ -107,12 +110,12 @@ router.post("/login-familia", async (req, res) => {
 
 // cRud (READ) - HTTP GET
 // Buscar dados do usuário
-router.get("/perfil-familia", isAuthenticated, attachCurrentUser, (req, res) => {
+router.get("/perfil-familia", isAuthenticated, attachCurrentFamilia, (req, res) => {
   console.log(req.headers);
 
   try {
     // Buscar o usuário logado que está disponível através do middleware attachCurrentUser
-    const loggedInUser = req.currentUser;
+    const loggedInUser = req.currentFamilia;
 
     if (loggedInUser) {
       // Responder o cliente com os dados do usuário. O status 200 significa OK
@@ -125,5 +128,4 @@ router.get("/perfil-familia", isAuthenticated, attachCurrentUser, (req, res) => 
     return res.status(500).json({ msg: JSON.stringify(err) });
   }
 });
-
 module.exports = router;

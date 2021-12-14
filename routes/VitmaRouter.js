@@ -14,12 +14,12 @@ const salt_rounds = 10;
 
 
 //importar o modelo da coleção
-const UserModel = require("../models/Vitma");
+const UserModel = require("../models/VitmaModel");
 
 
 // Crud (CREATE) - HTTP POST
 // Criar um novo usuário
-router.post("/cadastra-usuario", async (req, res) => {
+router.post("/cadastra-vitma",  async (req, res) => {
     try {
         // Extrair os dados do corpo da requisição
 
@@ -68,7 +68,7 @@ router.post("/cadastra-usuario", async (req, res) => {
 });
 
 // Login
-router.post("/login-usuario", async (req, res) => {
+router.post("/login-vitma", async (req, res) => {
     try {
         // Extrair os dados do corpo da requisição
 
@@ -105,7 +105,7 @@ router.post("/login-usuario", async (req, res) => {
 
 // cRud (READ) - HTTP GET
 // Buscar dados do usuário
-router.get("/profile-usuario", isAuthenticated, attachCurrentUser, (req, res) => {
+router.get("/perfil-vitma", isAuthenticated, attachCurrentUser, (req, res) => {
     console.log(req.headers);
 
     try {

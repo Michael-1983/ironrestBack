@@ -22,6 +22,6 @@ const UserSchema = new Schema({
   },
 });
 
-const UserModel = model("User", UserSchema);
+const VitmaModel = model("User", UserSchema);
 
-module.exports = UserModel;
+module.exports = VitmaModel;
