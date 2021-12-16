@@ -7,7 +7,7 @@ const PostSchema = new mongoose.Schema({
     estado: { type: String, trim: true},
     cidade: { type: String, trim: true},
     descricao: { type: String, trim: true },
-    imageUrl: { type: String, trim: true },
+    
     userId: String,
 
 })

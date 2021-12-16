@@ -107,6 +107,7 @@ router.post("/login-vitma", async (req, res) => {
 // Buscar dados do usuário
 router.get("/perfil-vitma", isAuthenticated, attachCurrentUser, (req, res) => {
     console.log(req.headers);
+    
 
     try {
         // Buscar o usuário logado que está disponível através do middleware attachCurrentUser
