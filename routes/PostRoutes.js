@@ -7,7 +7,7 @@ const router = express.Router();
 const PostModel = require("../models/Post.model");
 
 //Importar o modelo de usuários
-const UserModel = require("../models/User.model");
+const FamiliaModel = require("../models/familia.model");
 
 //Importar Autenticação JWT
 const isAuthenticated = require("../middlewares/isAuthenticated");
@@ -40,7 +40,7 @@ router.post(
       });
 
       //Inserir o ID do post no  cadastro do usuário
-      await UserModel.findOneAndUpdate(
+      await FamiliaModel.findOneAndUpdate(
         { _id: req.user._id },
         { $push: { postId: postCreated._id } }
       );
@@ -54,7 +54,7 @@ router.post(
 );
 
 //Busca lista completa dos post (exibe apenas se estiver logado)
-router.get("/lista-post", isAuthenticated, async (req, res) => {
+router.get("/lista-post", async (req, res) => {
   try {
     const post = await PostModel.find();
 
