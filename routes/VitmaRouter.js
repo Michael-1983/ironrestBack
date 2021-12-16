@@ -98,29 +98,24 @@ router.post("/login-vitma", async (req, res) => {
 
 // cRud (READ) - HTTP GET
 // Buscar dados do usuário
-router.get(
-  "/profile-usuario",
-  isAuthenticated,
-  attachCurrentUser,
-  (req, res) => {
-    console.log(req.headers);
+router.get("/perfil-vitma", isAuthenticated, attachCurrentUser, (req, res) => {
+  console.log(req.headers);
 
-    try {
-      // Buscar o usuário logado que está disponível através do middleware attachCurrentUser
-      const loggedInUser = req.currentUser;
+  try {
+    // Buscar o usuário logado que está disponível através do middleware attachCurrentUser
+    const loggedInUser = req.currentUser;
 
-      if (loggedInUser) {
-        // Responder o cliente com os dados do usuário. O status 200 significa OK
-        return res.status(200).json(loggedInUser);
-      } else {
-        return res.status(404).json({ msg: "Usuário não logado." });
-      }
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ msg: JSON.stringify(err) });
+    if (loggedInUser) {
+      // Responder o cliente com os dados do usuário. O status 200 significa OK
+      return res.status(200).json(loggedInUser);
+    } else {
+      return res.status(404).json({ msg: "Usuário não logado." });
     }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ msg: JSON.stringify(err) });
   }
-);
+});
 
 //Lista de vítimas
 router.get(

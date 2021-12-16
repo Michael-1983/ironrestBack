@@ -108,7 +108,7 @@ router.patch("/atualiza-post/:id", async (req, res) => {
   }
 });
 
-//Deleta quarto(Deleta apenas se o quarto foi cadastrado pelo usuário logado)
+//Deleta post(Deleta apenas se o quarto foi cadastrado pelo usuário logado)
 
 router.delete("/delete-post/:id", isAuthenticated, async (req, res) => {
   try {

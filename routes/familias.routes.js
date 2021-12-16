@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const generateToken = require("../config/jwt.config");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
+const attachCurrentFamilia = require("../middlewares/attacCurrentFamilia");
 
 // gera o salt
 const salt_rounds = 10;

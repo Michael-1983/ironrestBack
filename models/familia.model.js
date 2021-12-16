@@ -15,6 +15,7 @@ const FamiliaSchema = new Schema({
     cep: { type: Number,
     required: true,
     trim: true},
+    
     address:{ type: String,
     required: true,
     trim: true  },
