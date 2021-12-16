@@ -20,13 +20,13 @@ router.post("/cadastro-post", isAuthenticated,attachCurrentUser,  async (req, re
     try {
         //Extrair os dados do corpo da requisição
 
-        const { nome, sobrenome, idade, estado, cidade, descricao, imageUrl } = req.body;
+        const { nome, sobrenome, idade, estado, cidade, descricao } = req.body;
 
         //Inserir no banco de dados
         const postCreated = await PostModel.create({
             sobrenome, idade, estado, cidade,
             descricao,
-            imageUrl,
+            
             userId: req.user._id,
         });
 
@@ -100,9 +100,9 @@ const result = await PostModel.findOne({_id: req.params.id});
 
 
 
-//Deleta quarto(Deleta apenas se o quarto foi cadastrado pelo usuário logado)
+//Deleta post(Deleta apenas se o quarto foi cadastrado pelo usuário logado)
 
-router.delete("/delete-post/:id", isAuthenticated, async (req, res) => {
+router.delete("/delete-post/:id", isAuthenticated,attachCurrentUser, async (req, res) => {
     try {
         const post  = await PostModel.findOne({ _id: req.params.id });
 
