@@ -8,6 +8,7 @@ const PostModel = require("../models/Post.model");
 
 //Importar o modelo de usuários
 const FamiliaModel = require("../models/familia.model");
+const VitimaModel = require("../models/VitimaModel");
 
 //Importar Autenticação JWT
 const isAuthenticated = require("../middlewares/isAuthenticated");
@@ -24,13 +25,13 @@ router.post(
     try {
       //Extrair os dados do corpo da requisição
 
-      const { nome, sobrenome, idade, estado, cidade, descricao, imageUrl } =
+      const { nome, nickName, idade, estado, cidade, descricao, imageUrl } =
         req.body;
 
       //Inserir no banco de dados
       const postCreated = await PostModel.create({
         nome,
-        sobrenome,
+        nickName,
         idade,
         estado,
         cidade,
@@ -40,7 +41,7 @@ router.post(
       });
 
       //Inserir o ID do post no  cadastro do usuário
-      await FamiliaModel.findOneAndUpdate(
+      await VitimaModel.findOneAndUpdate(
         { _id: req.user._id },
         { $push: { postId: postCreated._id } }
       );
@@ -84,30 +85,30 @@ router.get(
     }
   }
 );
-
 //atualiza post
-router.patch("/atualiza-post/:id", async (req, res) => {
-  try {
-    // Extrair os dados do corpo da requisição
+router.patch(
+  "/atualiza-post/:id",
+  isAuthenticated,
+  attachCurrentUser,
+  async (req, res) => {
+    try {
+      const post = await PostModel.findOne({ _id: req.params.id });
 
-    // Atualizar o registro
-    const post = await PostModel.findOneAndUpdate(
-      { _id: req.params.id },
-      { $set: req.body },
-      { new: true, runValidators: true }
-    );
-
-    if (!post) {
-      return res.status(404).json({ msg: "Post não encontrado." });
+      if (post.userId.valueOf() !== req.user._id) {
+        return res.status(404).json({ msg: "Post não encontrado." });
+      }
+      const postUpdated = await PostModel.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: req.body },
+        { new: true, runValidators: true }
+      );
+      res.status(200).json(post);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
     }
-
-    res.status(200).json(post);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json(err);
   }
-});
-
+);
 //Deleta post(Deleta apenas se o quarto foi cadastrado pelo usuário logado)
 
 router.delete("/delete-post/:id", isAuthenticated, async (req, res) => {
@@ -122,13 +123,13 @@ router.delete("/delete-post/:id", isAuthenticated, async (req, res) => {
     }
 
     //Deleta ID do cadastro do usuario
-    await UserModel.findOneAndUpdate(
+    await VitimaModel.findOneAndUpdate(
       { _id: req.user._id },
       { $pull: { postId: req.params.id } }
     );
 
     const deletePost = await PostModel.deleteOne({ _id: req.params.id });
-
+    console.log(deletePost);
     if (deletePost.deletedCount < 1) {
       return res.status(404).json({ message: "Post não encontrado" });
     }

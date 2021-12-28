@@ -15,8 +15,8 @@ app.use(cors({ origin: process.env.REACT_APP_URL }));
 const familiaRoutes = require("./routes/familias.routes");
 app.use("/api", familiaRoutes);
 
-const FamiliaRoute = require("./routes/familias.routes");
-app.use("/api", FamiliaRoute);
+const VitmaRoutes = require("./routes/VitmaRouter");
+app.use("/api", VitmaRoutes);
 
 //rota dos post_schema
 const postRouter = require("./routes/PostRoutes");
