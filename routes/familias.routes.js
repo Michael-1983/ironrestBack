@@ -1,4 +1,3 @@
-
 //importando o express
 const router = require("express").Router();
 
@@ -9,29 +8,21 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 const attachCurrentUser = require("../middlewares/attachCurrentUser");
 const attachCurrentFamilia = require("../middlewares/attacCurrentFamilia");
 
-
-
 // gera o salt
 const salt_rounds = 10;
-
-
-
-
-
 
 //importar o modelo da coleção
 const familiaModel = require("../models/familia.model");
 
-
 // Crud (CREATE) - HTTP POST
 // Criar uma nova familia
 router.post("/cadastra-familia", async (req, res) => {
-
   try {
     // Extrair os dados do corpo da requisição
 
     const { name, email, cep, address, phone, password } = req.body;
-console.log(req.body);
+    console.log(req.body);
+
     // Verificar se a senha é forte
 
     if (
@@ -55,8 +46,14 @@ console.log(req.body);
 
     // Inserir no banco de dados
 
-    const result = await familiaModel.create({ name, email, cep, address, phone, passwordHash });
-        
+    const result = await familiaModel.create({
+      name,
+      email,
+      cep,
+      address,
+      phone,
+      passwordHash,
+    });
 
     // Responder a requisição
     res.status(201).json(result);
@@ -77,7 +74,7 @@ router.post("/login-familia", async (req, res) => {
   try {
     // Extrair os dados do corpo da requisição
 
-    const {  email, password } = req.body;
+    const { email, password } = req.body;
 
     // Procurar o usuário no banco de dados através do email
 
@@ -87,7 +84,7 @@ router.post("/login-familia", async (req, res) => {
     if (!foundUser) {
       return res.status(400).json({ msg: "E-mail ou senha incorretos." });
     }
-// compara a senha do usuario com o token
+    // compara a senha do usuario com o token
     if (!bcrypt.compareSync(password, foundUser.passwordHash)) {
       return res.status(400).json({ msg: "E-mail ou senha incorretos." });
     }
@@ -96,36 +93,42 @@ router.post("/login-familia", async (req, res) => {
 
     const token = generateToken(foundUser);
     res.status(200).json({
-    token,
-    user: {
-      _id: foundUser._id,
-      name: foundUser.name,
-      email: foundUser.email,
-    },
-  });
+      token,
+      user: {
+        _id: foundUser._id,
+        name: foundUser.name,
+        email: foundUser.email,
+      },
+    });
   } catch (err) {
-  console.log(err);
-}
+    console.log(err);
+  }
 });
 
 // cRud (READ) - HTTP GET
 // Buscar dados do usuário
-router.get("/perfil-familia", isAuthenticated, attachCurrentFamilia, (req, res) => {
-  console.log(req.headers);
+router.get(
+  "/perfil-familia",
+  isAuthenticated,
+  attachCurrentUser,
+  (req, res) => {
+    console.log(req.headers);
 
-  try {
-    // Buscar o usuário logado que está disponível através do middleware attachCurrentUser
-    const loggedInUser = req.currentFamilia;
+    try {
+      // Buscar o usuário logado que está disponível através do middleware attachCurrentUser
+      const loggedInUser = req.currentUser;
 
-    if (loggedInUser) {
-      // Responder o cliente com os dados do usuário. O status 200 significa OK
-      return res.status(200).json(loggedInUser);
-    } else {
-      return res.status(404).json({ msg: "Usuário não logado." });
+      if (loggedInUser) {
+        // Responder o cliente com os dados do usuário. O status 200 significa OK
+        return res.status(200).json(loggedInUser);
+      } else {
+        return res.status(404).json({ msg: "Usuário não logado." });
+      }
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ msg: JSON.stringify(err) });
     }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ msg: JSON.stringify(err) });
   }
-});
+);
+
 module.exports = router;

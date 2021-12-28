@@ -9,24 +9,19 @@ const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
 
-
-
-
-
 // Não esquecer de criar variável de ambiente com o endereço do seu app React (local ou deployado no Netlify)
 app.use(cors({ origin: process.env.REACT_APP_URL }));
-// rota do usuario 
-const userRoute  = require("./routes/VitmaRouter");
-app.use("/api", userRoute);
+// rota do usuario
+const familiaRoutes = require("./routes/familias.routes");
+app.use("/api", familiaRoutes);
 
-const FamiliaRoute  = require("./routes/familias.routes");
-app.use("/api", FamiliaRoute);
+const VitmaRoutes = require("./routes/VitmaRouter");
+app.use("/api", VitmaRoutes);
 
 //rota dos post_schema
-const postRoute = require("./routes/PostRoutes");
-app.use("/api", postRoute);
+const postRouter = require("./routes/PostRoutes");
+app.use("/api", postRouter);
 
-
-app.listen((process.env.PORT), () =>
+app.listen(process.env.PORT, () =>
   console.log(`servidor rodando na porta ${process.env.PORT}`)
 );
