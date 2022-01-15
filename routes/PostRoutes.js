@@ -55,7 +55,7 @@ router.post(
 );
 
 //Busca lista completa dos post (exibe apenas se estiver logado)
-router.get("/lista-post", async (req, res) => {
+router.get("/post", async (req, res) => {
   try {
     const post = await PostModel.find();
 
