@@ -1,18 +1,15 @@
 const mongoose = require("mongoose");
 
-async function connect() {
-  try {
-    // Não esquecer de criar variável de ambiente com endereço do seu servidor Mongo local em desenvolvimento, e o endereço do cluster do Atlas em produção
-    const connection = await mongoose.connect(process.env.MONGODB_URI, {
-      useCreateIndex: true,
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-    });
-    console.log("Connected to DB: ", connection.connection.name);
-  } catch (err) {
-    console.error("Database connection error: ", err);
-  }
-}
+const MONGODB_URI = process.env.MONGODB_URI;
 
-module.exports = connect;
+const connPromise = mongoose
+  .connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then((connObj) =>
+    console.log(`Conectado com sucesso ao banco ${connObj.connections[0].name}`)
+  )
+  .catch((err) => console.log("Erro de conexão com o MongoDB", err));
+
+module.exports = connPromise;
