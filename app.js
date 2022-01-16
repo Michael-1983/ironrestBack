@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-require("./config/db.config")();
+require("./config/db.config");
 
 const app = express();
 
@@ -22,13 +22,6 @@ app.use("/api", VitmaRoutes);
 const postRouter = require("./routes/PostRoutes");
 app.use("/api", postRouter);
 
-connectToDb
-  .then(() => {
-    app.listen(process.env.PORT, () => {
-      console.log("Servidor subiu com sucesso!");
-    });
-  })
-  .catch((err) => {
-    console.log(err);
-    process.exit(5);
-  });
+app.listen(process.env.PORT, () =>
+  console.log(`servidor rodando na porta ${process.env.PORT}`)
+);
